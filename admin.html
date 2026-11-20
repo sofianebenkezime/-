@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>لوحة الإمام</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Reem+Kufi:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#dcebef; --surface:#ffffff; --fg:#14231f; --muted:#5a6b65; --line:#d9e1dd;
+  --brand:#16626e; --brand-fg:#f2f5f3; --accent:#b5832a; --accent-soft:#f3e8d0; --danger:#a63a2b; --ok:#1f7a4d;
+  --font-display:"Reem Kufi",system-ui,sans-serif;
+  --font-body:"IBM Plex Sans Arabic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0a171b; --surface:#142320; --fg:#e8efec; --muted:#9db0aa; --line:#25382f;
+  --brand:#0b3a43; --brand-fg:#e8efec; --accent:#d9a547; --accent-soft:#33291a; --danger:#e0806f; --ok:#5cc08a; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.7}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;margin:0;text-wrap:balance}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:760px;margin-inline:auto;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+header.bar{background:var(--brand);color:var(--brand-fg);padding:1rem 0}
+header.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+header.bar h1{font-size:1.3rem}
+nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+nav a{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.2rem .9rem;text-decoration:none;font-size:.92rem}
+section.panel{padding-block:1rem 1.5rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.1rem 1.2rem;margin-bottom:1rem;min-width:0}
+.card h2{font-size:1.25rem;margin-bottom:.8rem}
+form{display:grid;gap:.8rem}
+.row{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr))}
+label{display:grid;gap:.25rem;font-size:.92rem;font-weight:500;min-width:0}
+label small{font-weight:400;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.55rem .7rem;width:100%;min-width:0}
+input[type=checkbox]{width:auto}
+label.check{display:flex;gap:.5rem;align-items:center}
+textarea{min-height:5.5rem;resize:vertical}
+.btn{font:inherit;font-weight:600;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:8px;padding:.5rem 1.1rem;cursor:pointer}
+.btn.primary{background:var(--brand);color:var(--brand-fg);border-color:var(--brand)}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn.small{font-size:.85rem;padding:.2rem .7rem;font-weight:500}
+.btns{display:flex;gap:.5rem;flex-wrap:wrap}
+.entry{border-top:1px solid var(--line);padding:.8rem 0;display:grid;gap:.4rem}
+.entry:first-of-type{border-top:0}
+.entry .meta{color:var(--muted);font-size:.85rem}
+.entry .t{font-weight:600}
+#msg{position:sticky;top:0;z-index:5;margin:0 auto;padding:.6rem 1rem;text-align:center;font-weight:500;background:var(--accent-soft)}
+#msg.err{color:var(--danger)} #msg.ok{color:var(--ok)}
+.muted{color:var(--muted);font-size:.9rem}
+.login{max-width:26rem;margin:3rem auto}
+</style>
+</head>
+<body>
+<div id="msg" role="status" aria-live="polite" hidden></div>
+
+<header class="bar"><div class="wrap">
+  <h1>لوحة الإمام</h1>
+  <div class="btns"><a class="btn small" style="text-decoration:none;color:inherit" href="./index.html">عرض الموقع</a><button class="btn small" id="logout" type="button" hidden>خروج</button></div>
+</div></header>
+
+<main class="wrap">
+  <!-- دخول -->
+  <div class="login" id="loginBox" hidden>
+    <div class="card">
+      <h2>تسجيل الدخول</h2>
+      <form id="loginForm">
+        <label>البريد الإلكتروني<input id="email" type="email" dir="ltr" autocomplete="username" required></label>
+        <label>كلمة المرور<input id="password" type="password" dir="ltr" autocomplete="current-password" required></label>
+        <button class="btn primary" type="submit">دخول</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- اللوحة -->
+  <div id="panel" hidden>
+    <nav><a href="#news">الإعلانات</a><a href="#items">الخطب والدروس</a></nav>
+
+    <section class="panel" id="news">
+      <div class="card">
+        <h2 id="newsFormTitle">إعلان جديد</h2>
+        <form id="newsForm">
+          <label>العنوان<input id="n_title" maxlength="200" required placeholder="مثال: بدء شرح كتاب جديد بعد صلاة المغرب"></label>
+          <label>التفاصيل <small>(اختياري)</small><textarea id="n_body" placeholder="اليوم والوقت والكتاب وأي تفصيل مفيد"></textarea></label>
+          <div class="row">
+            <label>تاريخ الإعلان<input id="n_date" type="date" required></label>
+            <label>يختفي بعد <small>(اختياري)</small><input id="n_until" type="date"></label>
+          </div>
+          <label class="check"><input id="n_pinned" type="checkbox"> تثبيت في أعلى الصفحة</label>
+          <div class="btns"><button class="btn primary" type="submit" id="n_save">نشر الإعلان</button><button class="btn" type="button" id="n_cancel" hidden>إلغاء التعديل</button></div>
+        </form>
+      </div>
+      <div class="card"><h2>الإعلانات المنشورة</h2><div id="newsList"><p class="muted">جارٍ التحميل…</p></div></div>
+    </section>
+
+    <section class="panel" id="items">
+      <div class="card">
+        <h2 id="itemFormTitle">إضافة خطبة أو درس</h2>
+        <form id="itemForm">
+          <div class="row">
+            <label>النوع<select id="i_type"><option value="dars">درس</option><option value="khutba">خطبة</option></select></label>
+            <label>التاريخ<input id="i_date" type="date" required></label>
+          </div>
+          <label>العنوان<input id="i_title" maxlength="200" required placeholder="مثال: شرح كتاب الطهارة، الدرس الثالث"></label>
+          <div class="row">
+            <label>التصنيف<input id="i_cat" list="catList" required placeholder="فقه، عقيدة، سيرة…" maxlength="40"></label>
+            <label>السلسلة <small>(اختياري)</small><input id="i_series" list="seriesList" maxlength="80" placeholder="اسم الكتاب أو السلسلة"></label>
+          </div>
+          <datalist id="catList"></datalist><datalist id="seriesList"></datalist>
+          <label>رابط ملف صوتي مباشر <small>(mp3، اختياري. يشغَّل داخل الموقع)</small><input id="i_audio" type="url" inputmode="url" dir="ltr" placeholder="https://…/lesson.mp3"></label>
+          <label>رابط خارجي <small>(يوتيوب أو أرشيف أو تيليغرام، اختياري)</small><input id="i_link" type="url" inputmode="url" dir="ltr" placeholder="https://…"></label>
+          <label>ملخص قصير <small>(اختياري، يساعد البحث)</small><textarea id="i_summary" maxlength="600"></textarea></label>
+          <div class="btns"><button class="btn primary" type="submit" id="i_save">نشر المادة</button><button class="btn" type="button" id="i_cancel" hidden>إلغاء التعديل</button></div>
+        </form>
+      </div>
+      <div class="card"><h2>المواد المنشورة</h2><div id="itemList"><p class="muted">جارٍ التحميل…</p></div></div>
+    </section>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const msg = (t,kind="ok")=>{const m=$("msg");m.textContent=t;m.className=kind;m.hidden=false;clearTimeout(msg.t);msg.t=setTimeout(()=>m.hidden=true,5000);};
+const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+const fmt=new Intl.DateTimeFormat("ar-DZ-u-nu-latn",{day:"numeric",month:"long",year:"numeric"});
+const showDate=d=>d?fmt.format(new Date(d+"T12:00:00")):"";
+const httpOk=u=>{ if(!u) return true; try{ return /^https?:$/.test(new URL(u).protocol); }catch{ return false; } };
+const el=(tag,attrs={},...kids)=>{const e=document.createElement(tag);for(const [k,v] of Object.entries(attrs)){if(k==="class")e.className=v;else if(k==="text")e.textContent=v;else e.setAttribute(k,v);}kids.flat().forEach(k=>e.append(k));return e;};
+
+function arErr(e){
+  const m=((e&&e.message)||"")+" "+((e&&e.code)||"");
+  if(/Invalid login/i.test(m)) return "البريد أو كلمة المرور غير صحيحة.";
+  if(/Email not confirmed/i.test(m)) return "لم يُؤكَّد البريد بعد. أكّده من لوحة Supabase (Authentication ثم Users).";
+  if(/rate limit|too many|over_request/i.test(m)) return "محاولات كثيرة. انتظر قليلاً ثم أعد المحاولة.";
+  if(/denied|row-level security|42501|permission/i.test(m)) return "هذا الحساب لا يملك صلاحية النشر. تأكد أن بريده مضاف في جدول admins.";
+  if(/check constraint|23514/i.test(m)) return "أحد الحقول غير صالح (طول زائد أو رابط لا يبدأ بـ https://).";
+  if(/Failed to fetch|NetworkError|network/i.test(m)) return "تعذر الاتصال بالإنترنت.";
+  return "حدث خطأ غير متوقع.";
+}
+
+const cfg=window.APP_CONFIG||{};
+let sb=null, items=[], news=[], editItem=null, editNews=null;
+
+const must = async q => { const {data,error}=await q; if(error) throw error; return data; };
+const mustRows = async q => { const d=await must(q.select()); if(!d||!d.length){ const e=new Error("denied"); e.code="denied"; throw e; } return d; };
+
+function showLogin(){ $("loginBox").hidden=false; $("panel").hidden=true; $("logout").hidden=true; }
+function showPanel(){ $("loginBox").hidden=true; $("panel").hidden=false; $("logout").hidden=false; resetItemForm(); resetNewsForm(); loadAll(); }
+
+(async()=>{
+  if(!(cfg.url&&cfg.anonKey&&window.supabase)){ showLogin(); msg("لم تُضبط إعدادات Supabase. راجع config.js وملف SETUP.md.","err"); return; }
+  sb=window.supabase.createClient(cfg.url,cfg.anonKey);
+  try{
+    const {data}=await sb.auth.getSession();
+    if(data&&data.session&&await isAdmin()) showPanel(); else showLogin();
+  }catch{ showLogin(); }
+  sb.auth.onAuthStateChange(ev=>{ if(ev==="SIGNED_OUT") showLogin(); });
+})();
+
+async function isAdmin(){ const {data,error}=await sb.rpc("is_admin"); return !error&&data===true; }
+
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(!sb) return msg("لم تُضبط إعدادات Supabase.","err");
+  try{
+    const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+    if(error) throw error;
+    $("password").value="";
+    if(!(await isAdmin())){ await sb.auth.signOut(); showLogin(); return msg("هذا الحساب ليس مشرفاً. أضف بريده إلى جدول admins.","err"); }
+    showPanel();
+  }catch(err){ msg(arErr(err),"err"); }
+});
+$("logout").addEventListener("click",async()=>{ try{ await sb.auth.signOut(); }catch{} showLogin(); });
+
+/* ---- تحميل ---- */
+const ITEM_COLS="id,type,title,date:item_date,cat,series,audio,link,summary";
+const NEWS_COLS="id,title,body,date:ann_date,until:until_date,pinned";
+async function loadAll(){
+  try{
+    const [a,b]=await Promise.all([
+      must(sb.from("items").select(ITEM_COLS).order("item_date",{ascending:false}).order("id",{ascending:false})),
+      must(sb.from("announcements").select(NEWS_COLS).order("ann_date",{ascending:false}).order("id",{ascending:false}))]);
+    items=a; news=b; renderItems(); renderNews(); fillLists();
+  }catch(e){ msg(arErr(e),"err"); }
+}
+function fillLists(){
+  const fill=(id,vals)=>$(id).replaceChildren(...[...new Set(vals.filter(Boolean))].map(v=>el("option",{value:v})));
+  fill("catList",items.map(i=>i.cat)); fill("seriesList",items.map(i=>i.series));
+}
+
+/* ---- الإعلانات ---- */
+function resetNewsForm(){
+  editNews=null; $("newsForm").reset(); $("n_date").value=today();
+  $("newsFormTitle").textContent="إعلان جديد"; $("n_save").textContent="نشر الإعلان"; $("n_cancel").hidden=true;
+}
+$("n_cancel").addEventListener("click",resetNewsForm);
+$("newsForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const d={title:$("n_title").value.trim(),body:$("n_body").value.trim(),ann_date:$("n_date").value,until_date:$("n_until").value||null,pinned:$("n_pinned").checked};
+  if(!d.title) return msg("اكتب عنواناً للإعلان.","err");
+  if(d.until_date&&d.until_date<d.ann_date) return msg("تاريخ الاختفاء قبل تاريخ الإعلان.","err");
+  try{
+    const wasEdit=!!editNews;
+    if(wasEdit) await mustRows(sb.from("announcements").update(d).eq("id",editNews));
+    else await must(sb.from("announcements").insert(d));
+    msg(wasEdit?"تم تحديث الإعلان.":"تم نشر الإعلان."); resetNewsForm(); loadAll();
+  }catch(err){ msg(arErr(err),"err"); }
+});
+function renderNews(){
+  const box=$("newsList"); const t=today();
+  if(!news.length){ box.replaceChildren(el("p",{class:"muted",text:"لا توجد إعلانات بعد."})); return; }
+  box.replaceChildren(...news.map(n=>{
+    const expired=n.until&&n.until<t;
+    const meta=[showDate(n.date),n.pinned?"مثبّت":"",n.until?(expired?"انتهى في ":"يختفي في ")+showDate(n.until):""].filter(Boolean).join(" · ");
+    const edit=el("button",{class:"btn small",type:"button",text:"تعديل"});
+    edit.addEventListener("click",()=>{
+      editNews=n.id; $("n_title").value=n.title||""; $("n_body").value=n.body||""; $("n_date").value=n.date||today();
+      $("n_until").value=n.until||""; $("n_pinned").checked=!!n.pinned;
+      $("newsFormTitle").textContent="تعديل الإعلان"; $("n_save").textContent="حفظ التعديل"; $("n_cancel").hidden=false;
+      $("newsForm").scrollIntoView({behavior:"smooth"});
+    });
+    const del=el("button",{class:"btn small danger",type:"button",text:"حذف"});
+    del.addEventListener("click",async()=>{
+      if(!confirm("حذف هذا الإعلان نهائياً؟")) return;
+      try{ await mustRows(sb.from("announcements").delete().eq("id",n.id)); msg("تم الحذف."); loadAll(); }catch(err){ msg(arErr(err),"err"); }
+    });
+    return el("div",{class:"entry"},el("div",{class:"t",text:n.title}),el("div",{class:"meta",text:meta}),el("div",{class:"btns"},edit,del));
+  }));
+}
+
+/* ---- الخطب والدروس ---- */
+function resetItemForm(){
+  editItem=null; $("itemForm").reset(); $("i_date").value=today();
+  $("itemFormTitle").textContent="إضافة خطبة أو درس"; $("i_save").textContent="نشر المادة"; $("i_cancel").hidden=true;
+}
+$("i_cancel").addEventListener("click",resetItemForm);
+$("itemForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const d={type:$("i_type").value,item_date:$("i_date").value,title:$("i_title").value.trim(),cat:$("i_cat").value.trim(),
+    series:$("i_series").value.trim(),audio:$("i_audio").value.trim(),link:$("i_link").value.trim(),summary:$("i_summary").value.trim()};
+  if(!d.title||!d.cat) return msg("العنوان والتصنيف مطلوبان.","err");
+  if(!httpOk(d.audio)||!httpOk(d.link)) return msg("الرابط يجب أن يبدأ بـ https://","err");
+  try{
+    const wasEdit=!!editItem;
+    if(wasEdit) await mustRows(sb.from("items").update(d).eq("id",editItem));
+    else await must(sb.from("items").insert(d));
+    msg(wasEdit?"تم تحديث المادة.":"تم نشر المادة."); resetItemForm(); loadAll();
+  }catch(err){ msg(arErr(err),"err"); }
+});
+function renderItems(){
+  const box=$("itemList");
+  if(!items.length){ box.replaceChildren(el("p",{class:"muted",text:"لا توجد مواد بعد. أضف أول خطبة أو درس من النموذج أعلاه."})); return; }
+  box.replaceChildren(...items.map(it=>{
+    const meta=[it.type==="khutba"?"خطبة":"درس",it.cat,showDate(it.date),it.series?"سلسلة: "+it.series:""].filter(Boolean).join(" · ");
+    const edit=el("button",{class:"btn small",type:"button",text:"تعديل"});
+    edit.addEventListener("click",()=>{
+      editItem=it.id; $("i_type").value=it.type||"dars"; $("i_date").value=it.date||today(); $("i_title").value=it.title||"";
+      $("i_cat").value=it.cat||""; $("i_series").value=it.series||""; $("i_audio").value=it.audio||""; $("i_link").value=it.link||""; $("i_summary").value=it.summary||"";
+      $("itemFormTitle").textContent="تعديل المادة"; $("i_save").textContent="حفظ التعديل"; $("i_cancel").hidden=false;
+      $("itemForm").scrollIntoView({behavior:"smooth"});
+    });
+    const del=el("button",{class:"btn small danger",type:"button",text:"حذف"});
+    del.addEventListener("click",async()=>{
+      if(!confirm("حذف هذه المادة نهائياً؟")) return;
+      try{ await mustRows(sb.from("items").delete().eq("id",it.id)); msg("تم الحذف."); loadAll(); }catch(err){ msg(arErr(err),"err"); }
+    });
+    return el("div",{class:"entry"},el("div",{class:"t",text:it.title}),el("div",{class:"meta",text:meta}),el("div",{class:"btns"},edit,del));
+  }));
+}
+</script>
+</body>
+</html>
