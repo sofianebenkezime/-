@@ -120,7 +120,7 @@ textarea{min-height:5.5rem;resize:vertical}
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="conf.js"></script>
+<script src="config.js"></script>
 <script>
 const $ = id => document.getElementById(id);
 const msg = (t,kind="ok")=>{const m=$("msg");m.textContent=t;m.className=kind;m.hidden=false;clearTimeout(msg.t);msg.t=setTimeout(()=>m.hidden=true,5000);};
